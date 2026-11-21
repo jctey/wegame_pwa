@@ -1,0 +1,361 @@
+/* 入口：令牌、全局样式、关键帧。复用类在 utilities.css。 */
+@import "tailwindcss";
+@import "./utilities.css";
+
+@theme {
+  /* 页面颜色：底、面板、强调。 */
+  --color-ink: #0c0c0e;
+  --color-panel: #17171a;
+  --color-accent: #ff7a1a;
+  /* 正文字体、顶栏字体、锚点数字字体。 */
+  --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-header: system-ui, "PingFang SC", "Open Sans", calibri, Roboto, verdana, "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  --font-num: "mfgeheinumber", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* 桌面断点。 */
+  --breakpoint-xl: 75rem;
+  /* 海报以相同速度从中心滑向各自的固定方向。 */
+  --animate-poster-out: posterOut 16s linear infinite both;
+  /* 顶栏创作者招募斜向扫光。前 25% 掠过，其余时间停在外侧。 */
+  --animate-creator-shine: creatorShine 6s ease-out infinite both;
+  /*
+   * 焕新时间线（秒，从进入本屏算起）。改时间只改这里。
+   *   0     → 1.2   主框上移                 refresh-rise
+   *   0.4   → 1.2   侧栏、搜索栏滑入         refresh-sidebar / refresh-search
+   *   0.45  → 1.65  代码半圆与光条展开       refresh-arc
+   *   0.55  → 0.85  扫光掠过主框             refresh-scan
+   *   0.8   → 1.3   标题 3.0 从下盖上        refresh-badge
+   *   2.3   → 2.9   切换：标题换 03，主框换 off 图，侧栏、搜索栏淡出
+   *                                          refresh-swap-in / refresh-swap-out / refresh-title-in
+   *   内容块不做动画：从一开始就叠在原图上、对齐原位，原图淡出后留下它。
+   */
+  --animate-refresh-rise: refreshRise 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-refresh-sidebar: refreshSidebarIn 0.8s ease-out 0.4s both, refreshFadeOut 0.6s ease-out 2.3s both;
+  --animate-refresh-search: refreshSearchIn 0.8s ease-out 0.4s both, refreshFadeOut 0.6s ease-out 2.3s both;
+  --animate-refresh-arc: refreshArcOpen 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.45s both;
+  --animate-refresh-scan: refreshScan 0.3s ease-out 0.55s both;
+  --animate-refresh-badge: refreshBadgeUp 0.5s ease-out 0.8s both;
+  --animate-refresh-swap-in: refreshFadeIn 0.6s ease-out 2.3s both;
+  --animate-refresh-swap-out: refreshFadeOut 0.6s ease-out 2.3s both;
+  --animate-refresh-title-in: refreshTitleIn 0.6s ease-out 2.3s both;
+  /* 焕新第二屏：主框后仰；视频遮罩与后仰同速渐显。 */
+  --animate-refresh-next-tilt: refreshNextTilt 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-refresh-next-gradient: refreshNextGradientIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  /* 与后仰同长，结束后副标题再淡入。 */
+  --animate-refresh-next-subtitle: refreshFadeIn 0.6s ease-out 1.2s both;
+  /* 助手 Tab3 机器人头像上下缓动。 */
+  --animate-assistant-avatar-float: assistantAvatarFloat 4.5s ease-in-out infinite;
+  /* 高校右侧球：同节奏、更大振幅。 */
+  --animate-campus-ball-float: campusBallFloat 4.5s ease-in-out infinite;
+  /* 高校右侧认证短句竖滚。 */
+  --animate-campus-ticker-scroll: campusTickerScroll 16s linear infinite;
+  /* more 背景竖滚。 */
+  --animate-more-bg-scroll: moreBgScroll 28s linear infinite;
+}
+
+/* 锚点数字字体。不改根字号，避免整站 rem 被拉开。 */
+@font-face {
+  font-family: mfgeheinumber;
+  src: url("/fonts/mfgeheinumber.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  /* 页面底色和文字。 */
+  body {
+    background: var(--color-ink);
+    color: #fff;
+  }
+
+  /* Firefox 滚动条。 */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 15%) transparent;
+  }
+
+  /* Chrome、Edge 滚动条轨道。 */
+  ::-webkit-scrollbar {
+    @apply h-1.5 w-1.5 bg-transparent;
+  }
+
+  /* 滚动条转角。 */
+  ::-webkit-resizer,
+  ::-webkit-scrollbar-corner {
+    @apply bg-transparent;
+  }
+
+  /* 滚动条滑块。 */
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-md border-2 border-solid border-transparent bg-white/15 bg-clip-padding transition-[background-color,border-color] duration-200 ease-in-out;
+  }
+
+  /* 滑块悬停变亮。 */
+  ::-webkit-scrollbar-thumb:hover {
+    @apply border-white/20 bg-white/20;
+  }
+}
+
+/* 相同速度向外滑。先隐一小段，再显现并变大，最后滑出屏幕。 */
+@keyframes posterOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.25);
+  }
+
+  27% {
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x) * 1.3), calc(-50% + var(--y) * 1.3)) scale(1.2);
+  }
+}
+
+/* 搜索图标箭头拉出。 */
+@keyframes search-arrow-grow {
+  0%,
+  40% {
+    width: 0;
+    opacity: 0;
+  }
+
+  100% {
+    width: 10px;
+    opacity: 1;
+  }
+}
+
+/* 搜索箭头上沿。 */
+@keyframes search-arrow-before {
+  0%,
+  40% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+/* 创作者招募斜向金光从左扫到右侧外。 */
+@keyframes creatorShine {
+  0% {
+    transform: translateZ(0) skew(30deg);
+  }
+
+  25% {
+    transform: translate3d(150px, 0, 0) skew(30deg);
+  }
+
+  100% {
+    transform: translate3d(150px, 0, 0);
+  }
+}
+
+/* 搜索箭头下沿。 */
+@keyframes search-arrow-after {
+  0%,
+  40% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-45deg);
+  }
+}
+
+/* ---------- 焕新。时间安排见 @theme 里的时间线。 ---------- */
+
+/* 主框从下方 16vh 升到停留位置。 */
+@keyframes refreshRise {
+  from {
+    transform: translateY(16vh);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 焕新第二屏主框 3D 后仰。 */
+@keyframes refreshNextTilt {
+  from {
+    transform: none;
+  }
+
+  to {
+    transform: rotateX(50deg) translateZ(-4vw) scale(0.96);
+  }
+}
+
+/* 焕新第二屏离场：去掉 animation 后托住后仰；勿与 transform-gpu 同用（会盖回直立）。 */
+.refresh-next-tilt-held {
+  transform: rotateX(50deg) translateZ(-4vw) scale(0.96);
+}
+
+@keyframes refreshNextGradientIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 侧栏从左下滑进。 */
+@keyframes refreshSidebarIn {
+  from {
+    transform: translate(-40%, 30%);
+  }
+
+  to {
+    transform: translate(0);
+  }
+}
+
+/* 搜索栏从右下滑进。 */
+@keyframes refreshSearchIn {
+  from {
+    transform: translate(30%, 30%);
+  }
+
+  to {
+    transform: translate(0);
+  }
+}
+
+/* 代码半圆与光条从中线向两侧展开。 */
+@keyframes refreshArcOpen {
+  from {
+    opacity: 0;
+    clip-path: inset(0 50% 0 50%);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+
+/* 扫光从主框底部升到顶部，到顶前淡掉。 */
+@keyframes refreshScan {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  82% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* 标题 3.0 从下往上盖住原字。 */
+@keyframes refreshBadgeUp {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* 新标题从下方淡入。 */
+@keyframes refreshTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 切换时出现的图层。 */
+@keyframes refreshFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 切换时退场的图层。 */
+@keyframes refreshFadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 助手 AI 头像：缓慢上下漂浮。 */
+@keyframes assistantAvatarFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6%);
+  }
+}
+
+/* 高校右侧球：上下漂浮（振幅大于助手头像）。 */
+@keyframes campusBallFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14%);
+  }
+}
+
+/* 高校短句：列表首尾相接竖滚。 */
+@keyframes campusTickerScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+/* more 背景：双帧竖向循环。 */
+@keyframes moreBgScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+
+

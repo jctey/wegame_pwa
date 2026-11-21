@@ -1,0 +1,25 @@
+---
+description: Read project docs before changing the WeGame PWA
+alwaysApply: true
+---
+
+# Read project docs first
+
+Before writing code, read `docs/project-overview.md` and the first open item in `docs/progress-tracker.md`. Then open only the matching doc:
+
+- UI: `docs/ui-context.md`
+- Structure or dependencies: `docs/architecture.md`
+- Components: `docs/code-standards.md`
+- PWA or Vercel: `docs/pwa-deploy.md`
+- Geolocation: `docs/bonus-geolocation.md` only when the current milestone is P2
+
+## Work rules
+
+- Do one milestone at a time. Do not start the next priority early.
+- Stack is Vite, React, TypeScript, Tailwind, React Router, and vite-plugin-pwa. No backend.
+- Write layout and logic yourself. Do not copy WeGame source.
+- After finishing a milestone, check it in `docs/progress-tracker.md` and add a one-line result.
+- Reply to the user in Chinese.
+- If a requirement or choice is unclear, ask the user before acting.
+- If any command fails, is blocked, or does not match expectations, explain what happened and ask before retrying or switching approach.
+- Typecheck only with `npm run typecheck`. Do not pass `--noEmit false` or other flags that make `tsc` write JavaScript.
