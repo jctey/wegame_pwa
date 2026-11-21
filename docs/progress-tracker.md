@@ -18,8 +18,9 @@ EN: Check items in order. After each one, mark it done and add a one-line result
 - [x] PWA：manifest、192/512 与 maskable 图标、Service Worker、离线页
   - 验收：生产构建可安装；断网打开站点能看到离线页或已缓存界面
   - 结果：`vite-plugin-pwa` 生成 manifest/SW；`public/icons` 占位图；`/offline` 独立页；`public/` 静态资源全量预缓存（含 `videos/`，约 49MB）；`freeipapi` 不缓存；**须在 `npm run preview`/Vercel 验 PWA，`npm run dev` 无 SW**
-- [ ] 部署到 Vercel，SPA 回退生效
+- [x] 部署到 Vercel，SPA 回退生效
   - 验收：公网 URL 可打开 `/` 与 `/offline`；把 URL 写在本文件末尾
+  - 结果：GitHub `master` + Vercel 自动构建；`vercel.json` SPA 回退；见文末 Live URL
 
 ## P1 首页补全
 
@@ -38,4 +39,4 @@ EN: Check items in order. After each one, mark it done and add a one-line result
 
 ## 结果
 
-- Live URL: （部署后填写）
+- Live URL: https://wegame-pwa.vercel.app
